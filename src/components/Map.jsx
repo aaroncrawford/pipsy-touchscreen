@@ -46,11 +46,9 @@ const Map = () => {
 				}
 			})
 
-			map.on("styledata", () => {
-			})
+			map.on("styledata", () => {})
 
-			map.on("sourcedata", (e) => {
-			})
+			map.on("sourcedata", (e) => {})
 
 			// Ensure map resizes properly
 			setTimeout(() => {
@@ -84,8 +82,7 @@ const Map = () => {
 						features: data.mapLots
 							.map((lot, index) => {
 								// Check if lot has coordinates array
-								const coordinates =
-									lot.coordinates[0]
+								const coordinates = lot.coordinates[0]
 
 								if (!coordinates || !Array.isArray(coordinates)) {
 									return null
@@ -105,7 +102,7 @@ const Map = () => {
 									}
 								}
 								let street = lot.address?.split(" ")[0] || ""
-								if(!parseInt(street)) street = ""
+								if (!parseInt(street)) street = ""
 								return {
 									type: "Feature",
 									properties: {
@@ -251,33 +248,36 @@ const Map = () => {
 
 	if (loading) {
 		return (
-			<div className="map-container">
-				<div className="map-loading">
-					<div className="spinner"></div>
-					<p>Loading map...</p>
+			<div className="relative w-full h-full min-h-[500px]">
+				<div className="flex flex-col items-center justify-center h-full">
+					<div className="w-12 h-12 border-3 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+					<p className="text-gray-600 text-lg">Loading map...</p>
 				</div>
 			</div>
 		)
 	}
 
 	return (
-		<div className="map-container">
-			<div ref={mapContainer} className="map-box" />
-			<div className="map-overlay">
-				<h2>Site Plan</h2>
-				<p>Explore available lots</p>
-				<div className="map-legend">
-					<div className="legend-item">
-						<span className="legend-color available"></span>
-						<span>Available</span>
+		<div className="relative w-full h-full min-h-[500px]">
+			<div
+				ref={mapContainer}
+				className="absolute inset-0 w-full h-full map-box"
+			/>
+			<div className="absolute top-8 left-8 bg-white/95 backdrop-blur-sm p-6 rounded-xl shadow-md">
+				<h2 className="text-xl font-semibold mb-2 text-gray-900">Site Plan</h2>
+				<p className="text-gray-600 text-sm mb-4">Explore available lots</p>
+				<div className="space-y-2">
+					<div className="flex items-center gap-2">
+						<span className="w-5 h-5 bg-green-500 rounded border border-black/20"></span>
+						<span className="text-sm text-gray-700">Available</span>
 					</div>
-					<div className="legend-item">
-						<span className="legend-color pending"></span>
-						<span>Pending</span>
+					<div className="flex items-center gap-2">
+						<span className="w-5 h-5 bg-orange-500 rounded border border-black/20"></span>
+						<span className="text-sm text-gray-700">Pending</span>
 					</div>
-					<div className="legend-item">
-						<span className="legend-color sold"></span>
-						<span>Sold</span>
+					<div className="flex items-center gap-2">
+						<span className="w-5 h-5 bg-red-500 rounded border border-black/20"></span>
+						<span className="text-sm text-gray-700">Sold</span>
 					</div>
 				</div>
 			</div>

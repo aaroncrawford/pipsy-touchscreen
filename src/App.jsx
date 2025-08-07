@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Routes, Route, useNavigate } from 'react-route
 import { useAppDispatch, useAppSelector } from './store/hooks.js'
 import { fetchPropertyData } from './store/propertySlice.js'
 import IdleScreen from './components/IdleScreen'
+import Header from './components/Header'
 import Navigation from './components/Navigation'
 import Map from './components/Map'
 import Homes from './components/Homes'
 import Info from './components/Info'
-import './App.scss'
 
 const IDLE_TIMEOUT = 10 * 60 * 1000 // 10 minutes
 
@@ -65,9 +65,9 @@ function AppContent() {
   }
 
   return (
-    <div className="app-container">
-      <Navigation />
-      <main className="main-content">
+    <div className="w-screen h-screen flex flex-col bg-gray-50 relative aspect-video max-h-screen max-w-[calc(100vh*16/9)] mx-auto">
+      <Header />
+      <main className="flex-1 overflow-hidden relative">
         <Routes>
           <Route path="/" element={<Info />} />
           <Route path="/map" element={<Map />} />
@@ -75,6 +75,7 @@ function AppContent() {
           <Route path="/info" element={<Info />} />
         </Routes>
       </main>
+      <Navigation />
     </div>
   )
 }

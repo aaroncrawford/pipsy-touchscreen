@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { useAppSelector } from '../store/hooks.js'
-import './Homes.scss'
 
 const Homes = () => {
   const { data, loading, error } = useAppSelector(state => state.property)
@@ -100,51 +99,54 @@ const Homes = () => {
     filter === 'all' || home.status === filter
   )
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case 'available': return 'status-available'
-      case 'pending': return 'status-pending'
-      case 'sold': return 'status-sold'
-      default: return ''
-    }
-  }
-
   if (loading) {
     return (
-      <div className="homes-loading">
-        <div className="spinner"></div>
-        <p>Loading homes...</p>
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="w-12 h-12 border-3 border-gray-200 border-t-blue-600 rounded-full animate-spin mb-4"></div>
+        <p className="text-gray-600 text-lg">Loading homes...</p>
       </div>
     )
   }
 
   if (error && homes.length === 0) {
     return (
-      <div className="homes-error">
-        <p>{error}</p>
+      <div className="flex flex-col items-center justify-center h-full">
+        <p className="text-red-600 text-lg mb-6">{error}</p>
       </div>
     )
   }
 
   return (
-    <div className="homes-container">
-      <div className="homes-header">
-        <h2>Available Homes</h2>
-        <div className="filter-buttons">
+    <div className="p-8 h-full overflow-y-auto bg-gray-50">
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-semibold text-gray-900 m-0">Available Homes</h2>
+        <div className="flex gap-2">
           <button 
-            className={filter === 'all' ? 'active' : ''}
+            className={`px-6 py-3 border-none rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 shadow-sm ${
+              filter === 'all' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+                : 'bg-white text-gray-600 hover:bg-gray-200 hover:-translate-y-0.5'
+            }`}
             onClick={() => setFilter('all')}
           >
             All
           </button>
           <button 
-            className={filter === 'available' ? 'active' : ''}
+            className={`px-6 py-3 border-none rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 shadow-sm ${
+              filter === 'available' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+                : 'bg-white text-gray-600 hover:bg-gray-200 hover:-translate-y-0.5'
+            }`}
             onClick={() => setFilter('available')}
           >
             Available
           </button>
           <button 
-            className={filter === 'pending' ? 'active' : ''}
+            className={`px-6 py-3 border-none rounded-lg text-sm font-medium cursor-pointer transition-all duration-300 shadow-sm ${
+              filter === 'pending' 
+                ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/30' 
+                : 'bg-white text-gray-600 hover:bg-gray-200 hover:-translate-y-0.5'
+            }`}
             onClick={() => setFilter('pending')}
           >
             Pending
@@ -152,33 +154,40 @@ const Homes = () => {
         </div>
       </div>
 
-      <div className="homes-grid">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-8 pb-8">
         {filteredHomes.map(home => (
-          <div key={home.id} className="home-card">
-            <div className="home-image">
+          <div key={home.id} className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-xl group">
+            <div className="relative w-full h-64 overflow-hidden">
               <img 
                 src={home.image} 
                 alt={home.name}
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 onError={(e) => {
                   e.target.src = '/placeholder-home.jpg'
                 }}
               />
-              <div className={`home-status ${getStatusColor(home.status)}`}>
+              <div className={`absolute top-4 right-4 px-4 py-2 rounded text-xs font-semibold uppercase tracking-wide text-white ${
+                home.status === 'available' ? 'bg-green-500' : 
+                home.status === 'pending' ? 'bg-orange-500' : 
+                'bg-gray-500'
+              }`}>
                 {home.status}
               </div>
             </div>
-            <div className="home-details">
-              <h3>{home.name}</h3>
-              <p className="home-price">{home.price}</p>
-              <div className="home-specs">
-                <span>{home.bedrooms} BD</span>
-                <span>{home.bathrooms} BA</span>
-                <span>{home.sqft} sq ft</span>
+            <div className="p-6">
+              <h3 className="text-xl font-semibold text-gray-900 m-0 mb-3">{home.name}</h3>
+              <p className="text-2xl font-bold text-blue-600 m-0 mb-4">{home.price}</p>
+              <div className="flex gap-6 mb-6">
+                <span className="text-gray-600 text-sm font-medium">{home.bedrooms} BD</span>
+                <span className="text-gray-600 text-sm font-medium">{home.bathrooms} BA</span>
+                <span className="text-gray-600 text-sm font-medium">{home.sqft} sq ft</span>
               </div>
               {home.address && (
-                <p className="home-address">{home.address}</p>
+                <p className="text-gray-500 text-sm mb-4 leading-relaxed">{home.address}</p>
               )}
-              <button className="home-cta">View Details</button>
+              <button className="w-full py-3.5 bg-blue-600 text-white border-none rounded-lg text-base font-semibold cursor-pointer transition-all duration-300 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30">
+                View Details
+              </button>
             </div>
           </div>
         ))}
