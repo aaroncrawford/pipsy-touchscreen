@@ -25,10 +25,7 @@ const IdleScreen = ({ onInteract }) => {
         />
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/30 to-black/50 flex flex-col items-center justify-center text-center text-white">
           <h1 className="text-6xl md:text-8xl font-light mb-4 tracking-wider drop-shadow-lg">Welcome to Kukuiula</h1>
-          <p className="text-xl md:text-2xl font-light opacity-90 mb-12 drop-shadow-sm">Tap anywhere to explore</p>
-          <div className="w-15 h-15 border-2 border-white/80 rounded-full relative animate-pulse">
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-5 h-5 bg-white/90 rounded-full"></div>
-          </div>
+          <p className="text-xl md:text-2xl font-light opacity-90 drop-shadow-sm">Tap anywhere to explore</p>
         </div>
       </div>
     </div>

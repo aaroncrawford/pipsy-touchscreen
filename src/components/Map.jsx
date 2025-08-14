@@ -149,7 +149,12 @@ const Map = () => {
 								"#8b5cf6",
 								"#10b981", // available - green
 							],
-							"fill-opacity": 0.6,
+							"fill-opacity": [
+								"case",
+								["==", ["get", "lot_status"], "Closed"],
+								0.1,
+								0.7,
+							],
 						},
 					})
 
@@ -228,16 +233,7 @@ const Map = () => {
 					})
 				}
 
-				// Add property marker if coordinates exist
-				if (data.property?.lat && data.property?.lng) {
-					const el = document.createElement("div")
-					el.className = "property-marker"
-					el.innerHTML = '<div class="marker-pulse"></div>'
-
-					new mapboxgl.Marker(el)
-						.setLngLat([data.property.lng, data.property.lat])
-						.addTo(map)
-				}
+				// Property marker removed - no blue pulsing dot
 			})
 		}
 		setMap(map)
