@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react"
 import mapboxgl from "mapbox-gl"
 import { useAppSelector } from "../store/hooks.js"
+import { Home, Trees } from "lucide-react"
+import PropertyModal from "./PropertyModal"
+import numeral from "numeral"
 import "mapbox-gl/dist/mapbox-gl.css"
 import "./Map.scss"
 
@@ -11,6 +14,8 @@ mapboxgl.accessToken =
 const Map = () => {
 	const mapContainer = useRef(null)
 	const [map, setMap] = useState(null)
+	const [selectedProperty, setSelectedProperty] = useState(null)
+	const [modalOpen, setModalOpen] = useState(false)
 	const { data, loading } = useAppSelector((state) => state.property)
 
 	useEffect(() => {
@@ -112,7 +117,7 @@ const Map = () => {
 											lot.name ||
 											lot.lotName ||
 											`${lot.lotNumber || index + 1}`,
-										status: lot.status || "available",
+										//status: lot.status || "available",
 										price: lot.price,
 										size: lot.size || lot.area,
 										...lot,
@@ -126,7 +131,10 @@ const Map = () => {
 							.filter(Boolean),
 					}
 					console.log(lotsGeoJSON)
-
+					let foo = lotsGeoJSON?.features?.filter(
+						(lot) => lot?.properties?.id === 106
+					)
+					console.log(foo)
 					// Add lots source
 					map.addSource("lots", {
 						type: "geojson",
@@ -141,17 +149,29 @@ const Map = () => {
 						paint: {
 							"fill-color": [
 								"case",
-								["==", ["get", "lot_status"], "Closed"],
+								// Sold/Closed lots
+								[
+									"in",
+									["get", "lot_status"],
+									["literal", ["Closed", "Developer"]],
+								],
 								"#cfcfcf",
-								["==", ["get", "status"], "pending"],
+								["==", ["get", "lot_status"], "Contract"],
 								"#f59e0b",
-								["==", ["get", "status"], "reserved"],
-								"#8b5cf6",
-								"#10b981", // available - green
+								["==", ["get", "lot_status"], "Available Home"],
+								"#3b82f6", // available home - blue
+								["==", ["get", "lot_status"], "Available Lot"],
+								"#10b981", // available homesite - green
+								// Default to gray for any other status
+								"#cfcfcf",
 							],
 							"fill-opacity": [
 								"case",
-								["==", ["get", "lot_status"], "Closed"],
+								[
+									"in",
+									["get", "lot_status"],
+									["literal", ["Closed", "Contract", "Developer"]],
+								],
 								0.1,
 								0.7,
 							],
@@ -193,34 +213,47 @@ const Map = () => {
 						if (!e.features || !e.features[0]) return
 
 						const lot = e.features[0].properties
-						const coordinates = e.features[0].geometry.coordinates[0]
+						console.log(lot)
 
-						// Calculate center of polygon
-						let sumLng = 0,
-							sumLat = 0
-						coordinates.forEach((coord) => {
-							sumLng += coord[0]
-							sumLat += coord[1]
-						})
-						const centerLng = sumLng / coordinates.length
-						const centerLat = sumLat / coordinates.length
+						// Find the matching property from data.available
+						if (data.available) {
+							// Try multiple matching strategies
+							const matchingProperty = data.available.find(
+								(prop) => prop.id === lot.id
+							)
 
-						// Create popup content
-						const popupContent = `
-					<div class="lot-popup">
-						<h3>${lot?.name || "Lot"}</h3>
-						<div class="lot-status ${lot?.status || "available"}">${
-							lot?.status || "available"
-						}</div>
-						${lot?.price ? `<p class="lot-price">${lot.price}</p>` : ""}
-						${lot?.size ? `<p class="lot-size">${lot.size}</p>` : ""}
-					</div>
-					`
+							if (matchingProperty) {
+								// Transform the property data to match the format expected by PropertyModal
+								const transformedProperty = {
+									id: matchingProperty.id,
+									name:
+										matchingProperty.marketing_home_type ||
+										matchingProperty.builder_marketing_name ||
+										`${matchingProperty.lot_type} Lot`,
+									price: matchingProperty.price,
+									bedrooms: matchingProperty.beds || 0,
+									bathrooms: matchingProperty.full_baths || 0,
+									halfBaths: matchingProperty.half_baths || 0,
+									sqft: matchingProperty.sqft || matchingProperty.lot_size,
+									image:
+										matchingProperty.images &&
+										matchingProperty.images.length > 0
+											? matchingProperty.images[0]
+											: null,
+									//status: lot.lot_status || "available",
+									address: matchingProperty.address,
+									description: matchingProperty.marketing_description,
+									features: matchingProperty.features || [],
+									images: matchingProperty.images || [],
+									lot: matchingProperty.lot,
+									neighborhood: matchingProperty.neighborhood,
+									...matchingProperty,
+								}
 
-						new mapboxgl.Popup()
-							.setLngLat([centerLng, centerLat])
-							.setHTML(popupContent)
-							.addTo(map)
+								setSelectedProperty(transformedProperty)
+								setModalOpen(true)
+							}
+						}
 					})
 
 					// Change cursor on hover
@@ -264,19 +297,38 @@ const Map = () => {
 				<p className="text-gray-600 text-sm mb-4">Explore available lots</p>
 				<div className="space-y-2">
 					<div className="flex items-center gap-2">
+						<span className="w-5 h-5 bg-blue-500 rounded border border-black/20"></span>
+						<span className="text-sm text-gray-700 flex items-center gap-1">
+							<Home className="w-3.5 h-3.5" /> Available Home
+						</span>
+					</div>
+					<div className="flex items-center gap-2">
 						<span className="w-5 h-5 bg-green-500 rounded border border-black/20"></span>
-						<span className="text-sm text-gray-700">Available</span>
+						<span className="text-sm text-gray-700 flex items-center gap-1">
+							<Trees className="w-3.5 h-3.5" /> Available Homesite
+						</span>
 					</div>
 					<div className="flex items-center gap-2">
 						<span className="w-5 h-5 bg-orange-500 rounded border border-black/20"></span>
 						<span className="text-sm text-gray-700">Pending</span>
 					</div>
 					<div className="flex items-center gap-2">
-						<span className="w-5 h-5 bg-red-500 rounded border border-black/20"></span>
+						<span className="w-5 h-5 bg-gray-400 rounded border border-black/20"></span>
 						<span className="text-sm text-gray-700">Sold</span>
 					</div>
 				</div>
 			</div>
+
+			{/* Property Details Modal */}
+			<PropertyModal
+				property={selectedProperty}
+				custom={data?.custom}
+				isOpen={modalOpen}
+				onClose={() => {
+					setModalOpen(false)
+					setSelectedProperty(null)
+				}}
+			/>
 		</div>
 	)
 }

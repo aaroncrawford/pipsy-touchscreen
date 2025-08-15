@@ -10,7 +10,7 @@ import {
 	Calendar,
 	Home,
 	Trees,
-	Milestone
+	Milestone,
 } from "lucide-react"
 import numeral from "numeral"
 
@@ -56,7 +56,7 @@ const PropertyModal = ({ property, isOpen, onClose, custom }) => {
 			onClick={onClose}
 		>
 			<div
-				className="relative w-full max-w-7xl max-h-[95vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+				className="relative w-full max-w-7xl h-[60vh] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Close button */}
@@ -69,7 +69,7 @@ const PropertyModal = ({ property, isOpen, onClose, custom }) => {
 
 				<div className="flex flex-col lg:flex-row h-full">
 					{/* Image Gallery */}
-					<div className="relative lg:w-3/5 h-[480px] lg:h-auto bg-gray-100">
+					<div className="relative lg:w-3/5 h-full bg-gray-100 flex-shrink-0">
 						{images.length > 0 ? (
 							<>
 								<img
@@ -185,7 +185,7 @@ const PropertyModal = ({ property, isOpen, onClose, custom }) => {
 							{property.lot && (
 								<div className="flex items-start gap-3">
 									<Milestone className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-									<p className="text-gray-700">Lot {property.lot}</p>
+									<p className="text-gray-700">Lot {property.lot} - {property.id}</p>
 								</div>
 							)}
 							{property.address && (

@@ -30,17 +30,13 @@ const Homes = () => {
 	const determineStatus = (home) => {
 		if (home.lot_status) {
 			const status = home.lot_status.toLowerCase()
-			if (
-				status.includes("available") ||
-				status.includes("active") ||
-				status.includes("developer")
-			)
+			if (status === "available lot" || status === "available home")
 				return "available"
 			if (status.includes("pending") || status.includes("contract"))
 				return "pending"
 			if (status.includes("sold") || status.includes("closed")) return "sold"
 		}
-		return "available"
+		return "sold"
 	}
 
 	useEffect(() => {
