@@ -145,6 +145,10 @@ const Homes = () => {
 					<div
 						key={home.id}
 						className="bg-white rounded-2xl overflow-hidden shadow-lg transition-all duration-300 cursor-pointer hover:-translate-y-1 hover:shadow-xl group"
+						onClick={() => {
+							setSelectedProperty(home)
+							setModalOpen(true)
+						}}
 					>
 						<div className="relative w-full h-64 overflow-hidden">
 							<img
@@ -204,13 +208,7 @@ const Homes = () => {
 									</div>
 								)}
 							</div>
-							<div
-								onClick={() => {
-									setSelectedProperty(home)
-									setModalOpen(true)
-								}}
-								className="w-full py-3.5 text-center bg-blue-600 text-white border-none rounded-lg text-base font-semibold cursor-pointer transition-all duration-300 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30"
-							>
+							<div className="w-full py-3.5 text-center bg-blue-600 text-white border-none rounded-lg text-base font-semibold cursor-pointer transition-all duration-300 hover:bg-blue-700 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-blue-600/30">
 								View Details
 							</div>
 						</div>
@@ -221,6 +219,7 @@ const Homes = () => {
 			{/* Property Details Modal */}
 			<PropertyModal
 				property={selectedProperty}
+				custom={data?.custom}
 				isOpen={modalOpen}
 				onClose={() => {
 					setModalOpen(false)

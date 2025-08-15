@@ -1,8 +1,20 @@
 import { useState, useEffect } from "react"
-import { X, ChevronLeft, ChevronRight, Bed, Bath, Square, MapPin, Calendar, Home, Trees } from "lucide-react"
+import {
+	X,
+	ChevronLeft,
+	ChevronRight,
+	Bed,
+	Bath,
+	Square,
+	MapPin,
+	Calendar,
+	Home,
+	Trees,
+	Milestone
+} from "lucide-react"
 import numeral from "numeral"
 
-const PropertyModal = ({ property, isOpen, onClose }) => {
+const PropertyModal = ({ property, isOpen, onClose, custom }) => {
 	const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
 	useEffect(() => {
@@ -44,7 +56,7 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 			onClick={onClose}
 		>
 			<div
-				className="relative w-full max-w-6xl max-h-[90vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
+				className="relative w-full max-w-7xl max-h-[95vh] bg-white rounded-2xl shadow-2xl overflow-hidden"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Close button */}
@@ -57,7 +69,7 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 
 				<div className="flex flex-col lg:flex-row h-full">
 					{/* Image Gallery */}
-					<div className="relative lg:w-3/5 h-96 lg:h-auto bg-gray-100">
+					<div className="relative lg:w-3/5 h-[480px] lg:h-auto bg-gray-100">
 						{images.length > 0 ? (
 							<>
 								<img
@@ -72,15 +84,15 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 									<>
 										<button
 											onClick={prevImage}
-											className="absolute left-4 top-1/2 -translate-y-1/2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
+											className="absolute left-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
 										>
-											<ChevronLeft className="w-6 h-6 text-gray-700" />
+											<ChevronLeft className="w-8 h-8 text-gray-700" />
 										</button>
 										<button
 											onClick={nextImage}
-											className="absolute right-4 top-1/2 -translate-y-1/2 p-2 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
+											className="absolute right-4 top-1/2 -translate-y-1/2 p-3 bg-white/90 backdrop-blur-sm rounded-full shadow-lg hover:bg-white transition-all duration-200"
 										>
-											<ChevronRight className="w-6 h-6 text-gray-700" />
+											<ChevronRight className="w-8 h-8 text-gray-700" />
 										</button>
 										<div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
 											{images.map((_, index) => (
@@ -122,10 +134,9 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 								{property.name}
 							</h2>
 							<p className="text-3xl font-bold text-blue-600">
-								{typeof property.price === 'number' 
+								{typeof property.price === "number"
 									? numeral(property.price).format("$0,0")
-									: property.price
-								}
+									: property.price}
 							</p>
 						</div>
 
@@ -135,7 +146,9 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 								<div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
 									<Bed className="w-5 h-5 text-gray-600" />
 									<div>
-										<p className="text-2xl font-semibold text-gray-900">{property.bedrooms}</p>
+										<p className="text-2xl font-semibold text-gray-900">
+											{property.bedrooms}
+										</p>
 										<p className="text-xs text-gray-600">Bedrooms</p>
 									</div>
 								</div>
@@ -145,7 +158,8 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 									<Bath className="w-5 h-5 text-gray-600" />
 									<div>
 										<p className="text-2xl font-semibold text-gray-900">
-											{property.bathrooms}{property.half_baths > 0 ? `.${property.half_baths}` : ''}
+											{property.bathrooms}
+											{property.half_baths > 0 ? `.${property.half_baths}` : ""}
 										</p>
 										<p className="text-xs text-gray-600">Bathrooms</p>
 									</div>
@@ -156,7 +170,9 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 									<Square className="w-5 h-5 text-gray-600" />
 									<div>
 										<p className="text-2xl font-semibold text-gray-900">
-											{typeof property.sqft === 'number' ? numeral(property.sqft).format("0,0") : property.sqft}
+											{typeof property.sqft === "number"
+												? numeral(property.sqft).format("0,0")
+												: property.sqft}
 										</p>
 										<p className="text-xs text-gray-600">Sq Ft</p>
 									</div>
@@ -166,23 +182,33 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 
 						{/* Additional Info */}
 						<div className="space-y-4 mb-6">
+							{property.lot && (
+								<div className="flex items-start gap-3">
+									<Milestone className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+									<p className="text-gray-700">Lot {property.lot}</p>
+								</div>
+							)}
 							{property.address && (
 								<div className="flex items-start gap-3">
 									<MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
 									<p className="text-gray-700">{property.address}</p>
 								</div>
 							)}
-							{property.builder_marketing_name && (
-								<div className="flex items-start gap-3">
-									<Home className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-									<p className="text-gray-700">Built by {property.builder_marketing_name}</p>
-								</div>
-							)}
+							{property.builder_marketing_name &&
+								!custom?.personalize?.noBuilder && (
+									<div className="flex items-start gap-3">
+										<Home className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+										<p className="text-gray-700">
+											{property.builder_marketing_name}
+										</p>
+									</div>
+								)}
 							{property.complete_date && (
 								<div className="flex items-start gap-3">
 									<Calendar className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
 									<p className="text-gray-700">
-										Completed {new Date(property.complete_date * 1000).getFullYear()}
+										Completed{" "}
+										{new Date(property.complete_date * 1000).getFullYear()}
 									</p>
 								</div>
 							)}
@@ -191,14 +217,17 @@ const PropertyModal = ({ property, isOpen, onClose }) => {
 						{/* Description */}
 						{property.description && (
 							<div className="mb-6">
-								<h3 className="text-lg font-semibold text-gray-900 mb-3">Description</h3>
-								<div 
+								<h3 className="text-lg font-semibold text-gray-900 mb-3">
+									Description
+								</h3>
+								<div
 									className="prose prose-sm text-gray-700 max-w-none"
-									dangerouslySetInnerHTML={formatDescription(property.description)}
+									dangerouslySetInnerHTML={formatDescription(
+										property.description
+									)}
 								/>
 							</div>
 						)}
-
 					</div>
 				</div>
 			</div>
